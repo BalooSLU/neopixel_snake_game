@@ -89,6 +89,7 @@ int highscoreLoad(highscoreEntry highscore[10]) {
 }
 
 //Funktion gibt das Spielfeld auf der Konsole aus
+//TODO Ändern so dass das Feld auf dem NeoPixel Ausgegeben wird.
 void printField(int field[WIDTH][HEIGHT], int points) {
 	int y, x, i;
 	char c;
@@ -191,20 +192,23 @@ int step(direction move, snakePart **first, snakePart **last, int field[WIDTH][H
 
 //Funktion fragt die Richtungseingabe ab
 void getDirection(direction *move) {
+    /* TODO
 	if (GetAsyncKeyState(VK_UP)) *move = up;
 	else if (GetAsyncKeyState(VK_DOWN)) *move = down;
 	else if	(GetAsyncKeyState(VK_LEFT)) *move = left;
 	else if (GetAsyncKeyState(VK_RIGHT)) *move = right;
+    */
 }
 
 //Funktion zur initialisierung des Spiels
 void gameInit(int field[WIDTH][HEIGHT],snakePart **first, snakePart **last) { //Verwendung Pointer auf Pointer #4
 	int x,y;
-
+    /* TODO 
 	GetAsyncKeyState(VK_UP);
 	GetAsyncKeyState(VK_DOWN);
 	GetAsyncKeyState(VK_LEFT);
 	GetAsyncKeyState(VK_RIGHT);
+    */
 
 	for (x = 0; x < WIDTH; x++) {
 		for (y = 0; y < HEIGHT; y++) {
@@ -235,8 +239,7 @@ int gameOver(int points, char name[20], highscoreEntry highscore[10]) {
 	p_score = malloc(sizeof(highscoreEntry)*10);
 	if (p_score == NULL) return -1;
 	if (points > highscore[9].points) {
-		system("cls");
-		printType(gameOverText_highscore);
+		
 		Sleep(1000);
 		realloc(p_score, sizeof(highscoreEntry)*11);
 		for (i = 0; i < 10; i++) {
@@ -253,17 +256,9 @@ int gameOver(int points, char name[20], highscoreEntry highscore[10]) {
 		highscoreLoad(highscore);
 	}
 	else {
-		system("cls");
-		printType(gameOverText);
+		//Kein neuer Highscore
 	}
 	return 0;
-}
-
-//Funktion für den Teaser nach Spielstart
-void gameTeaser(void) {
-	system("cls");
-	printType(gameText);
-	Sleep(5000);
 }
 
 //Funktion zum starten des Spiels
@@ -282,139 +277,4 @@ void gameStart(char name[20], highscoreEntry highscore[10]) {
 			Sleep(400);
 		} while (resume);
 		gameOver(points,name, highscore);
-}
-
-//Funktion gibt das Menü aus
-void printMenu(int position, char name[20]) {
-	int i;
-
-	system("cls");
-	printf("---Hallo %s, willkommen im Hauptmen"uuml"---\n",name);
-	printf("Bitte w"auml"hle einen Men"uuml"punkt aus.\nDu kannst mit den Pfeiltasten navigieren.\nZum Best"auml"tigen dr"uuml"cke Enter!\n");
-	for (i = 0; i < menu_items; i++) {
-
-		if (i == position) printf("-->");
-		else printf("   ");
-
-		switch (i) {
-		case 0:
-			printf("Neues Spiel");
-			break;
-		case 1:
-			printf("Bestenliste");
-			break;
-		case 2:
-			printf("  Beenden  ");
-			break;
-		}
-		if (i == position) printf("<--");
-		printf("\n");
-	}
-}
-
-//Funktion zur navigation im Menü
-int menuNavigate(char name[20]) {
-	int position = 0, end = 0, help;
-	short up, down, enter;
-
-	do {
-		printMenu(position, name);
-		Sleep(70);
-		GetAsyncKeyState(VK_UP);
-		GetAsyncKeyState(VK_DOWN);
-		GetAsyncKeyState(VK_RETURN);
-		ZERO(up);
-		ZERO(down);
-		ZERO(enter);
-		do {
-			up = GetAsyncKeyState(VK_UP);
-			down = GetAsyncKeyState(VK_DOWN);
-			enter = GetAsyncKeyState(VK_RETURN);
-		} while ((!up) && (!down) && (!enter));
-		if (up) {
-			help = position - 1;
-			position = (abs(help) + help) / 2;
-		}
-		else if (down) {
-			help = (menu_items - 1) - (position + 1);
-			position = (menu_items - 1) - ((abs(help) + help) / 2);
-		}
-		else if (enter) {
-			end = 1;
-			return position;
-		}
-	} while (!end);
-	return -1;
-}
-
-//Funktion zur verarbeitung der Eingabe
-int menuCall(char name[20], highscoreEntry highscore[10]) {
-	switch (menuNavigate(name)) {
-	case 0:
-		gameStart(name, highscore);
-		break;
-	case 1:
-		printHighscore(highscore);
-		break;
-	case 2:
-		printType("Du m"ouml"chtest mich schon verlassen?\nBitte gehe nicht!!!\nEhrlich, lass mich nicht allein...\n\nOkay du darfst gehen ich will ja niemanden bevormunden. :)\nIch w"uuml"nsche dir noch einen sch"ouml"nen Tag ");
-		printType(toCaps(name));
-		printType("!\n");
-		return 0;
-		break;
-	}
-	return 1;
-}
-
-//Funktion zur ausgabe der Hilfe
-void help(char text[]) {
-	printf("---Snake Hilfe---\n");
-	printf("Nachfolgend finden Sie eine Detaillierte Anleitung zur Bedienung von Snake.\nDiese Hilfe kann mit \"%s help\" jederzeit wieder aufgerufen werden.",text);
-
-	printf("\n1. Aufruf des Spiels\n");
-	printf("\tDas Spiel muss mit dem Spielernamen als zus"auml"tzlichem Parameter aus\n\tder Konsole gestartet werden.\n");
-	printf("\t'%s <Spielername>'\n", text);
-	printf("\tBeispiel: '%s Sebastian'\n", text);
-
-	printf("\n2. Navigieren\n");
-	printf("\tDas Spiel startet nach erfolgreichem Aufrufen im Hauptmen"uuml".\n");
-	printf("\tDie aktuelle Position wird mittels Pfeilen: '-->' und '<--' angezeigt.\n");
-	printf("\tUm andere Eintr"auml"ge auszuw"auml"hlen kann mit\n\tden Pfeiltasten navigiert werden.\n");
-	printf("\tZum best"auml"tigen der Auswahl kann die Enter-Taste verwendet werden.\n");
-
-	printf("\n3. Das Spiel\n");
-	printf("\tNach dem Starten des Spiels erscheint das Spielfeld samt Schlange\n\tund Futterteilen.\n");
-	printf("\tDie Schlange besteht aus mehrreren Gliedern.\n");
-	printf("\tJedes Schlangenglied wird durch ein 'o' dargestellt.\n");
-	printf("\tDie Futterteile werden durch ein 'x' dargestellt.\n");
-	printf("\tZiel des Spiels ist es mithilfe der Pfeiltasten\n\tdie Schlange zum Futter zu navigieren.\n");
-	printf("\tHat man nun ein Futterteil aufgefressen, so wird die Schlange\n\tum ein Glied verl"auml"ngert und ein neues Futterteil erscheint\n");
-	printf("\tW"auml"hrend eines Spiels kann nicht pausiert werden.\n");
-	printf("\tF"uuml"r jedes Futterteil erh"auml"lt man Punkte, diese werden\n\tam unteren Bildrand angezeigt.\n");
-	printf("\tSollte die Schlange den Spielfeldrand erreichen, so l"auml"uft sie\n\tauf der gegen"uuml"berliegenden Seite wieder ins Feld.\n");
-	printf("\tDas Spiel ist beendet sobald die Schlange sich selbst rammt.\n");
-}
-
-int main(int argC, char *argV[]) { //Verwendung Array von Pointern #5 + Aufruf mit Argumenten über die Konsole #6
-	char name[20];
-	highscoreEntry highscore[10];
-	if (argC != 2) {
-		printf("Fehler! Das Programm wurde nicht richtig aufgerufen!\n");
-		printf("F"uuml"r eine Ausf"uuml"hrliche Hilfe und Dokumentation nutzen Sie bitte: \n'%s help'", argV[0]);
-		return -1;
-	}
-	else {
-		strcpy(name, argV[1]);
-		if (strcmp(name, "help\0")) {				//Verwendung strcmp() #3
-			if (highscoreLoad(highscore)) {
-				printf("Fehler beim Dateizugriff!\n");
-				return -1;
-			}
-			while (menuCall(name, highscore));
-		}
-		else {
-			help(argV[0]);	//Im Falle der Eingabe von "help" als Namen ist eine Sinnvolle umlenkung der Standardausgabe möglich #18
-		}
-	}
-	return 0;
 }

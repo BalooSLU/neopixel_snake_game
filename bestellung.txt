@@ -1,0 +1,7 @@
+Adafruit NeoPixel Digital RGB LED - wetterbeständiger Streifen mit 60 LEDs/m - 4m - weiß
+	-106,89€
+	-https://www.exp-tech.de/zubehoer/led-leuchtmittel/4235/adafruit-neopixel-digital-rgb-led-wetterbestaendiger-streifen-mit-60-leds/m-4m-weiss
+	
+NodeMCU-32S based on ESP-32S 
+	-8,57€
+	-https://www.exp-tech.de/plattformen/esp32/9371/nodemcu-32s-based-on-esp-32s
