@@ -1,8 +1,7 @@
 #pragma once
 #define _CRT_SECURE_NO_WARNINGS
 
-//Verwendung von Makros #16
-//Symbolische Konstanten #17
+
 
 #define uuml "\201"
 #define Uuml "\232"
@@ -18,14 +17,13 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-//#include <Windows.h>
 #include <math.h>
 #include <String.h>
 #include <ctype.h>
 
 typedef enum {	//Verwendung einer Aufzählung #8
-	up,
-	down, left, right
+	UP,
+	DOWN, LEFT, RIGHT
 } direction;
 
 typedef struct snake_part { //Verwendung von Strukturen #7 + Typennamenneudefinition #9
