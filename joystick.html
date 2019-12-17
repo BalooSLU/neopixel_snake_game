@@ -1,0 +1,94 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #bbbbbb;
+    }
+
+    #info {
+      padding: 5px;
+      position: absolute;
+      top: 0px;
+      width: 100%;
+      text-align: center;
+    }
+
+    #info a {
+      color: #667dff;
+      text-decoration: none;
+    }
+
+    #info a:hover {
+      text-decoration: underline;
+    }
+
+    #container {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100%;
+      width: 100%;
+      -moz-user-select: none;
+    }
+  </style>
+  <title>Snake Joystick</title>
+</head>
+
+<body>
+  <div id="container"></div>
+  <div id="info">
+    <div style="text-align:center"> Touch the screen and move <br>
+    </div>
+    <span id="result"></span>
+  </div>
+
+  <div style="text-align: center">
+    <script src="./virtualjoystick.js">
+    </script>
+    <script>
+      var joystick = new VirtualJoystick({
+        container: document.getElementById('container'),
+        mouseSupport: true,
+        limitStickTravel: true,
+      });
+      joystick.addEventListener('touchStart', function () {
+        console.log('down');
+      });
+      joystick.addEventListener('touchEnd', function () {
+        console.log('up');
+      });
+
+      setInterval(function () {
+        var outputEl = document.getElementById('result');
+        var xhr = new XMLHttpRequest();
+        outputEl.innerHTML = '<b>Position:</b> ';
+        if (joystick.right()) { outputEl.innerHTML += 'right' };
+        if (joystick.up()) { outputEl.innerHTML += ' up' };
+        if (joystick.left()) { outputEl.innerHTML += ' left' };
+        if (joystick.down()) { outputEl.innerHTML += ' down' };
+
+        if (joystick.right()) {
+          xhr.open("PUT", "/right");
+        }
+        if (joystick.left()) {
+          xhr.open("PUT", "/left");
+        }
+        if (joystick.up()) {
+          xhr.open("PUT", "/up");
+        }
+        if (joystick.down()) {
+          xhr.open("PUT", "/down");
+        }
+        xhr.send();
+      }, 150);
+    </script>
+</body>
+
+</html>
