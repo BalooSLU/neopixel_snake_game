@@ -58,6 +58,14 @@
         mouseSupport: true,
         limitStickTravel: true,
       });
+      const joymode = {
+        default: 0,
+        left: 1,
+        right: 2,
+        up: 3,
+        down: 4
+      };
+      var lastjoystick = joymode.default;
       joystick.addEventListener('touchStart', function () {
         console.log('down');
       });
@@ -70,22 +78,26 @@
         var xhr = new XMLHttpRequest();
         outputEl.innerHTML = '<b>Position:</b> ';
         if (joystick.right()) { outputEl.innerHTML += 'right' };
-        if (joystick.up()) { outputEl.innerHTML += ' up' };
         if (joystick.left()) { outputEl.innerHTML += ' left' };
+        if (joystick.up()) { outputEl.innerHTML += ' up' };
         if (joystick.down()) { outputEl.innerHTML += ' down' };
 
-        if (joystick.right()) {
+        if (joystick.right() && lastjoystick != joymode.right) {
           xhr.open("PUT", "/right");
+          lastjoystick = joymode.right;
         }
-        if (joystick.left()) {
+        else if (joystick.left() && lastjoystick != joymode.left) {
           xhr.open("PUT", "/left");
+          lastjoystick = joymode.left;
         }
-        if (joystick.up()) {
+        else if (joystick.up() && lastjoystick != joymode.up) {
           xhr.open("PUT", "/up");
+          lastjoystick = joymode.up;
         }
-        if (joystick.down()) {
+        else if (joystick.down() && lastjoystick != joymode.down) {
           xhr.open("PUT", "/down");
-        }
+          lastjoystick = joymode.down;
+        };
         xhr.send();
       }, 150);
     </script>
