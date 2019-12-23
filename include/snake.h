@@ -52,7 +52,7 @@ char * toCaps(char * string) {
 	int i, n = strlen(string);  //Verwendung strlen() #3
 	char * result;
 
-	result = malloc(sizeof(char)*n);
+	result = (char *) malloc(sizeof(char)*n);
 
 	for (i = 0; i < n; i++) {
 		result[i] = toupper(string[i]);
