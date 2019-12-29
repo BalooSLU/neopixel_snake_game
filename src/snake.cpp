@@ -4,30 +4,60 @@ Konstantin Meyer
 
 
 ******************************************************/
+#include <NeoPixelBus.h>
+#include <ESPAsyncWebServer.h>
 
-#include "snake.h"
-#include <Adafruit_NeoPixel.h>
-#include <ESPAsyncWebServer.h> 
 
-#define LED_COUNT 12
-#define PIN0 2
+#define WIDTH 20		
+#define HEIGHT 12
+#define ZERO(v) v = 0
+#define LED_COUNT 240
+#define LED_PIN 23
 
-direction move = DOWN;
+typedef enum {	//Verwendung einer Aufzählung #8
+	UP,
+	DOWN, LEFT, RIGHT
+} direction;
+
+typedef struct snake_part { //Verwendung von Strukturen #7 + Typennamenneudefinition #9
+	short x;
+	short y;
+	struct snake_part *next;
+} snakePart;
+
+typedef struct {
+	int points;
+	char name[20];
+}highscoreEntry;
+
+
+const int menu_items = 3;
+const char highscoreFile[] = {"bestenliste"};
+volatile direction move = DOWN;
 int field[WIDTH][HEIGHT];
 
-Adafruit_Neopixel strip_0(LED_COUNT, PIN0, NEO_RGB + NEO_KHZ800);
+NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(LED_COUNT, LED_PIN);
+
+void Sleep(int time) {
+	int i = millis() + time;
+	while(millis()< i);
+}
 
 void neoPixel_setup()
 {
-
+	strip.Begin();
+	strip.Show();
 }
 
 //Funktion gibt das Spielfeld auf der Konsole aus
 //TODO Ändern so dass das Feld auf dem NeoPixel Ausgegeben wird.
 void printField(int points)
 {
-	int y, x, i;
-	char c;
+	int y, x;
+	RgbColor red(128,0,0);
+	RgbColor black(0);
+	RgbColor blue(0,0,128);
+	RgbColor c(0);
 
 	for (y = 0; y < HEIGHT; y++)
 	{
@@ -36,25 +66,21 @@ void printField(int points)
 			switch (field[x][y])
 			{
 			case 0:
-				c = ' ';
+				c = black;
 				break;
 			case 1:
-				c = 'o';
+				c = blue;
 				break;
 			case 2:
-				c = 'x';
+				c = red;
 				break;
 			}
-			printf("%c", c);
+			strip.SetPixelColor((y*WIDTH)+x, c);
+			
 		}
-		printf("%c\n", 186);
+		
 	}
-
-	printf("%c", 200);
-	for (i = 0; i < WIDTH; i++)
-		printf("%c", 205);
-	printf("%c", 188);
-	printf("\n\nPunkte: %d", points);
+	strip.Show();
 }
 
 //Funktion erzeugt ein neues Futerteil auf dem Spielfeld
@@ -94,7 +120,7 @@ int step(snakePart **first, snakePart **last, int *points)
 		x = -1;
 		y = 0;
 		break;
-	case RIGHT:
+	default:
 		x = 1;
 		y = 0;
 		break;
@@ -137,6 +163,7 @@ int step(snakePart **first, snakePart **last, int *points)
 //interrupthandler für left
 void left(AsyncWebServerRequest *request)
 {
+	Serial.println("Left");
 	move = LEFT;
 	request->send_P(200, "text/plain", "");
 }
@@ -144,6 +171,7 @@ void left(AsyncWebServerRequest *request)
 //interrupthandler für right
 void right(AsyncWebServerRequest *request)
 {
+	Serial.println("Right");
 	move = RIGHT;
 	request->send_P(200, "text/plain", "");
 }
@@ -151,6 +179,7 @@ void right(AsyncWebServerRequest *request)
 //interrupthandler für up
 void up(AsyncWebServerRequest *request)
 {
+	Serial.println("Up");
 	move = UP;
 	request->send_P(200, "text/plain", "");
 }
@@ -158,6 +187,7 @@ void up(AsyncWebServerRequest *request)
 //interrupthandler für down
 void down(AsyncWebServerRequest *request)
 {
+	Serial.println("Down");
 	move = DOWN;
 	request->send_P(200, "text/plain", "");
 }
@@ -175,11 +205,11 @@ void gameInit(snakePart **first, snakePart **last)
 		}
 	}
 
-	*first = malloc(sizeof(snakePart));
+	*first = (snakePart *)malloc(sizeof(snakePart));
 	(*first)->x = 1;
 	(*first)->y = 2;
 
-	*last = malloc(sizeof(snakePart));
+	*last = (snakePart *)malloc(sizeof(snakePart));
 	(*last)->x = 1;
 	(*last)->y = 1;
 
@@ -189,28 +219,22 @@ void gameInit(snakePart **first, snakePart **last)
 	field[1][3] = 2;
 }
 
-//Funktion für den Fall der Niederlage
-int gameOver(int points)
-{
-
-	return 0;
-}
-
 //Funktion zum starten des Spiels
-void gameStart(char name[20], highscoreEntry highscore[10])
+void gameStart(void)
 {
 	snakePart *first = NULL, *last;
 	int points = 0, resume;
-	move = RIGHT;
+	move = DOWN;
+	Serial.println("GameStart Waiting for RIGHT");
+	while(move!=RIGHT);
 
-	gameTeaser();
 	gameInit(&first, &last);
 
+	Serial.println("GameINIT succesfull");
 	do
 	{
 		resume = step(&first, &last, &points);
 		printField(points);
 		Sleep(400);
 	} while (resume);
-	gameOver(points);
 }

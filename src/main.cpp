@@ -1,15 +1,17 @@
 #include <Arduino.h>
 #include "main.h"
 #include "webserv.h"
+#include "snake.h"
 
 void setup()
 {
   init_web();
+  neoPixel_setup();
 }
 
 void loop()
 {
-  // put your main code here, to run repeatedly:
+  gameStart();
 }
 #ifdef TEST_WITHOUT_SNAKE_ENGINE
 void left(AsyncWebServerRequest *request)

@@ -1,7 +1,7 @@
 #ifndef MAIN_SNAKE_H
 #define MAIN_SNAKE_H
 
-#define TEST_WITHOUT_SNAKE_ENGINE
+//#define TEST_WITHOUT_SNAKE_ENGINE
 #include <ESPAsyncWebServer.h>
 
 extern void left(AsyncWebServerRequest *request);
