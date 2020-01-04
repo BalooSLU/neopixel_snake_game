@@ -75,7 +75,12 @@ void printField(int points)
 				c = red;
 				break;
 			}
-			strip.SetPixelColor((y*WIDTH)+x, c);
+			if (y % 2 == 0) {
+				strip.SetPixelColor((y*WIDTH)+x, c);
+			} else {
+				strip.SetPixelColor(((y+1)*WIDTH)-x-1, c);
+			}
+			
 			
 		}
 		
@@ -110,11 +115,11 @@ int step(snakePart **first, snakePart **last, int *points)
 	{
 	case UP:
 		x = 0;
-		y = -1;
+		y = 1;
 		break;
 	case DOWN:
 		x = 0;
-		y = 1;
+		y = -1;
 		break;
 	case LEFT:
 		x = -1;
