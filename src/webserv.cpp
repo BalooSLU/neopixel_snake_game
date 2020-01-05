@@ -1,6 +1,7 @@
 #include "main.h"
 #include "webserv.h"
 #include <WiFi.h>
+#include <ESPmDNS.h>
 #include <ESPAsyncWebServer.h>
 
 AsyncWebServer server(80);
@@ -24,6 +25,14 @@ void init_web(void)
     Serial.println();
     Serial.print("IP address: ");
     Serial.println(WiFi.softAPIP());
+    if (!MDNS.begin("SnakeGame"))
+    {
+        Serial.println("Error setting up MDNS responder!");
+        while (1)
+        {
+            delay(1000);
+        }
+    }
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->send_P(200, "text/html", index_html);
     });
@@ -41,4 +50,5 @@ void init_web(void)
     server.on("/down", down);
     server.onNotFound(notFound);
     server.begin();
+    MDNS.addService("http", "tcp", 80);
 }
